@@ -1,0 +1,51 @@
+Date: 28 Jan 2015
+
+Writable
+========
+- things going into and out of map and reduce methods shd be Writable types
+- output of map/ input to reduce should be serializable.
+- only if type is serializable, it can be sent byte by byte across network from map to reduce machines.
+- readFields, write methods are implemented by Writable types
+- Hadoop specific version of Serializable
+
+Text
+====
+- class Text is mutable
+- Since String in Java is immuatable this might be surprising!
+
+MapClass
+========
+- extends Mapper
+- define map method
+	-  use tokenizer to split words in a line
+- args to map method may/may not change between map calls
+	- there is no guarantee
+	- so, do not hold any references to input args in List for ex.
+- map() method has no knowledge of completion of task globally (like this is my last call).
+- but there are methods like startup() , close() which could be used to maintain and write states in map()
+	- not a good practice
+
+ReduceClass
+===========
+- extends Reducer
+- define reduce method
+
+- MapClass and ReduceClass should be declared as static while nesting it inside another class file.
+
+
+Combiner
+========
+- more like reduce()
+- gets key and list of values from mapper and writes key and value
+- called before shuffle
+- input and output should be same as reduce() input and output
+- more like doing a reduce task locally
+- like doing a reduce task in the map machine  - helps in reducing data copied to reduce machine
+- wont work for cases were reduce needs all of the data ot do its task for ex: median
+- bypassing combiner should not change anything. For ex, this can happen if mapper is producing data
+  at a rate higher than combiner comsumption.
+
+
+
+
+
