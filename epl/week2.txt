@@ -1,0 +1,32 @@
+Date: 29 Jan 2015
+
+explicit keyword
+================
+- when you dont want the constructor of a type to be called for implicit type conversions,
+  then add explicit keyword prefix to the constructor that should not be used.
+- example case:
+		vector<int> X(10);
+		if(X==42){
+			//in this case, rhs arg is type converted to vector for comparison
+		}
+
+iterators
+=========
+- provide access to subunits of the container in an abstract way
+- abstract way because design decisions like how to determine end of container
+  can be masked under iterator implementation and user need not know.
+- C++ iterators are better than JAVA
+	- JAVA uses iterator.done() type methods to determine if iterator has reached the end of the container
+	- this is bad - in C++, client decides if he should iterate over entire container or only a subportion
+	- in c++, iterator need not have knowledge about the iteration portion
+- in the case of LinkedList (discussed in class), the iterator will point to cell (subunit).
+
+auto keyword
+============
+- deduces type of the rhs 
+- ex: auto p = fred.begin();
+- can take const prefix
+- ex:
+		for(const auto& p : fred){
+			cout << x; 
+		}
