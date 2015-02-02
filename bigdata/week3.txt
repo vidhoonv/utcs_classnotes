@@ -1,0 +1,88 @@
+2 Feb 2015
+==========
+
+Unit Tests
+==========
+- There is a test dir in the directory structure to place tests.
+- MapDriver, ReduceDriver are used to test them as isolated units from MRUnit
+- as part of setup create map/reduce classes and also drivers
+	- for example mapDriver = MapDriver.newMapDriver(mapper)
+	- mapDriver.withInput(...)
+	- mapDriver.withOutput(...)
+	- mapDriver.runTest()
+	- same flow for reduceDriver
+- run hadopp with Amazon AWS for testing purposes (like simulation)
+- mvn build will compile code and run these tests locally (saves time)
+
+Summarization Design Pattern
+============================
+- Counting is common MR task
+- Also statistical measures like mean, median, mode etc.
+- mappers do local counts, reducers sum up
+- combiners - very helpful 
+	- to sum up counts locally 
+	- reduce data sent to reducer(13000 "hello 1" entries vs 1 "hello 13000" entry)
+
+
+Assignment 2
+===========
+- For Mean, we need
+	- Total number of occurences of the word
+	- Number of paragraphs containing the word
+
+- Input has '\n' at end of paragraph (formatted)
+-For variance,
+	-formula is E[(X-mean)^2] or summation i=1 to n [(xi-mean)^2]/n
+	- Using algebra, can be simplified to E[X^2]-(E[X])^2
+	- X is the  number of times the word appeared in the paragraph
+	- So E[X^2] is just like mean
+	- We also have the mean - just square it
+	- We have everything to find variance now
+	- Just one pass is required 
+
+Mapper
+======
+- For every word output,
+	- number of paragraphs
+	- total count
+	- sum of squares of count
+
+- context.write(word, (three LongWritables))
+- how to write three LongWritables 
+	- can be passed as text
+	- create an object and put three numbers
+- write() method and readFields()
+- LongArrayWritable is needed
+	- hadoop provides ArrayWritable
+	- provides get(),getValueClass(), setWritable(), toArray(). toString()
+	- implement this class as an extension of ArrayWritable
+	- indicate the type of the array in constructor
+		- like this: super(LongWritable.class)
+	-implement getValueArray() to get array of longs from LongArrayWritable
+
+Reducer
+=======
+- For every word output
+	- mean
+	- variance
+- output of mapper looks like
+	- the {1,7,49}, the {1,2,4}
+- reducer needs to sum all three values for each word
+- then it calculates mean and variance which are floating point types
+- DoubleArrayWritable can extend ArrrayWritable 
+	- ** important to override toString() method because while hadoop writes output it converts toString() for writing.
+
+Combiner
+========
+- Use them to sum same word in different paragraphs locally before sending to reducer
+- In this case, combiner and reducer are semantically different
+	- combiner  only sums mapper output
+	- reducer needs to also calculate mean and variance
+- Combiner takes input like reducer and output like mapper
+
+Dataset
+=======
+- there is a lot of quotations
+- strip out all punctuations, convert to lowercase
+- semicolon, double dashses, ... etc.
+- do this para by para in mapper before tokenizing
