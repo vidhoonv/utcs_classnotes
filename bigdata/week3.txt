@@ -86,3 +86,74 @@ Dataset
 - strip out all punctuations, convert to lowercase
 - semicolon, double dashses, ... etc.
 - do this para by para in mapper before tokenizing
+
+
+4 Feb 2015
+==========
+
+Assignment 2 stuff
+==================
+- Create assign2 inside the same package as assign1
+- Update the pom xml file as per needs for assign1
+- tests for each component should be under the same package tree structure
+- ex: 
+	main
+		com.refactorlabs.cs378.assign1
+		com.refactorlabs.cs378.assign2
+	test
+		com.refactorlabs.cs378.assign1
+		com.refactorlabs.cs378.assign2
+
+- maven shade (pom.xml)
+==============
+
+- Used to include JARs of all dependencies (recursively)
+	- some JARS can be excluded using <scope>provided</scope> withing the <dependency>
+
+Summarization pattern (Contd.,)
+=====================
+- purpose of keys-> different between inputs to combiner and reducer for grouping
+- For finding min and max length of  paras 
+	- key can be anything - no need to group or differentiate inputs
+	- combiner will get list of value pairs from mapper for each paragraph 
+	- combiner will find min,max from the list of values from mapper
+	- reducer does the same using output of combiner as input
+	- in this case, both combiner and reducer have exact same functionality but in the case of assignment 2
+		- combiner will just provide sum of lengths and sum of squares of lengths
+		- reducer will compute mean , median using the sums
+- Median
+	- get values, sort them, pick middle
+	- sort is challenging - needs all numbers in one machine or awarness to actually pick the middle
+	- so we store, <length,1> in mapper. Something like wordcount but here we have para len, count instead of word count
+	- if we need only one reducer, then use same key for all entries in mapper, combiner
+	- SortedMapWritable class - sort the <key,value> entries by keys
+	- Example in chapter 2
+
+Compute Min,Max and Median all in one pass
+==========================================
+- (key,value) : ("pstats",<length,1>)
+-  pick first and last entries in reducer
+
+Using counters
+- can use counters to instrument/debug
+- accessed by groups
+- limited number of counters available
+
+Jobtracker and Tasktracker (hadoop internals)
+==========================
+- Job object contains info abt hadoop job - config written to HDFS
+- Job tracker spins required number of mappers, reducers
+- Task tracker runs on mappers and reducers
+- Job tracker talks to task trackers in mapper and reducer to schedule the mapper and reducer tasks for a particular job
+- Task tracker tracks map/reduce task and job tracker interacts with task tracker - used to handle fault tolerance
+- when job tracker sees map tasks completed, it starts reduce tasks
+- map tasks are assigned to task trackers that are close to input split location
+	- data local preferred
+	- same local rack preferred next
+- reduce tasks can go anywhere - why? less data
+- task tracker and job tracker have heartbeat msgs - for fault tolerance
+
+Measuring progress of task
+==========================
+- even before mappers finish execution, sort and shuffle phase of reducers can start. So it is common to see reducers start making progress before all mappers are finished
+
