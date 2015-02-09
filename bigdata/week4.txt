@@ -1,0 +1,47 @@
+9 Feb 2015
+==========
+
+- Problems in our method of calculating variance
+	- E[X^2] or E[X]^2 might be larger to fit in long (method unstable)
+	- Can be done incrementally instead  of accumulating those values over the entire data.
+	
+Assignment 2 Questions
+======================
+- Does mapper get only one paragraph?
+	- gets one line at a time
+- How do we make sure combiner is called?
+	- use counter 
+	- combiner will get called with certainity
+- How to test combiner in pipeline (testmapreduce) using local tests?
+	- use reduceDriver to call combiner (need to try and find)
+
+Assignment 2 code
+=================
+- In main function, to give multiple file inputs
+	- use addInputPaths with comma seperated list of multiple files
+- to clean up data from special characters
+	- use StringUtils.replace
+- hashmap - Map<String, Integer> wordCountMap = Maps.newHashMap()
+- toString() - can use StringUtils.join()
+- combiner gets data from one mapper while reducer gets from multiple combiners
+- context object is replicated in all map/reduce nodes (replication done by YARN (resource manager/scheduler))
+
+
+Assignment 3 Intro
+==================
+- Inverted index
+- given a word, give list of docs that contain it word ---> <doc1,doc2,doc3....>
+- useful for search engines to find document with relevant words for a search
+- final output: key:word, value: list of docs the word appears in
+- mapper output: word, doc_id
+- reducer output: word, list of doc_id
+- for the assignment, every line is going to be a document
+- combiner can be used - if more than one doc is passed to the mapper (use set to identify word repititions)
+
+- Format:
+	- Document ID book:chapter:verse
+	- Text
+- output:
+	- word, list  of book:chapter:verse (no duplicates)
+	- book:chapter:verse sort
+- Remove duplicates in mapper to reduce amount of data passed to reducer
