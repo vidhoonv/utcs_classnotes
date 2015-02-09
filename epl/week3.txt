@@ -1,0 +1,45 @@
+3 Feb 2015
+==========
+
+struct Cell {
+	Cell* next = this;
+	Cell* prev = this;
+	ElemType data;
+
+	Cell(const ElemType& x) : data{x} {} //copy constructor is called for data
+}
+
+
+Cell *p = new Cell; // this constructs data that will get erased an loaded again next step
+p->data = X;
+
+This is fixed using the constructor in the struct.
+
+two needs:
+
+1) Cell * dummy = makeDummy();
+	- get uninitialized memory
+		- Cell*p = (Cell *) ::operator new(sizeof(Cell)); //invoking new with function call syntax
+		- in the case of new - if it is operator call - then calls constructor, if function syntax - then does not invoke constructor
+		- there is a scope resolution operator in new function syntax because, new can be oveerloaded in a user defined class. If :: has no prefix class name, then it invokes the standard 'new'
+
+
+2) Cell p = new Cell(x)
+
+Move semantics
+==============
+
+- take advantage of shallow copy when that is sufficient
+
+String r;
+String S{"hello"}, t{"world"};
+r = combine(S,t);
+
+combine returns a temp String and that can be shallow copied to r, then temp is destroyed
+but C++ prefers deep copy and does that.
+
+To do shallow copy (called MOVE in C++):
+
+s ----> [hello/]
+t ----> [world/]
+r ----> [helloworld/]
