@@ -44,4 +44,4 @@ Assignment 3 Intro
 - output:
 	- word, list  of book:chapter:verse (no duplicates)
 	- book:chapter:verse sort
-- Remove duplicates in mapper to reduce amount of data passed to reducer
+- Remove duplicates in mapper to reduce amount of data passed to reducer`
