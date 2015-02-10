@@ -1,0 +1,85 @@
+10 Feb 2015
+===========
+
+iterator
+========
+- purpose is to provide opaque handle to elements inside the container
+- this will abstract all internals of implementation of a container like 
+  how it maintains end of container etc.
+- Sample code in java:
+	Iterator p  = list.iterator();
+	while(p.hasNext()){
+		x=p.next();
+	}
+- C++ iterators
+	- more powerful than JAVA
+	- they are like pseudo pointers
+	- use ranges to describe containers (has both begin() and end())
+		- vs in Java, we can get iterator only to beginning (iterator() method)
+		- notion of subset access (like first half or second half)
+		  becomes difficult with java's notion
+- STL goals (C++)
+	- generic to element type
+	- generic to container type (for ex, std::sort() for vector and array)
+	- predictable time complexity
+		- vs in Java, we have methods if it can be elemented
+		- for ex, in java, we have random access for linked list which is 
+		  not possible according to data structure design
+	- efficient - on par with hand written code
+- Operations on pointers:
+	- *p 	dereference
+	- ++p   advance
+	- p==q	equivalence
+	- --p   retreat (important to distinguish from advance because 
+					in the case of LL, advance is supported while
+					retreat is not possible)
+	- p+k	random access (possible in the case of arrays) 
+			- this implies indexing is also possible p[k] //since p[k] = *(p+k)
+	- p-q	difference
+
+- Not all operations are possible for all containers (because of STL efficiency goal)
+	- for example, 
+		- --p on linked list iterator is not possible
+		- DLL first 4 operations only
+		- BST first 4 operations only
+		- SLL first 3 operations only
+	- so, iterators of some containers might be  kess powerful than another
+- Qualifying capability of iterators of containers
+	- forward_iterator (first 3 operations only)
+	- bidirectional_iterator (first 4 operations only)
+	- random_access_iterator (all 6 operations)
+
+Conventions for writing iterators
+=================================
+- const_iterator
+	- By default, iterators provide access to read and change value of a location in a container
+	- must define const_iterator if the data structure is immutable by nature
+- data structure will provide
+	- iterator begin(void)
+	- const_iterator begin(void) const
+	- iterator end(void)
+	- const_iterator end(void) const
+- provide:
+	- atleast default constructor
+	- based on iterator type (forward, bidir, random) - operator functions:
+		- op*
+		- op++(void)
+		- op==
+		- op--(void)
+		- op+(int)
+		- op-(same)
+- provide nested types:
+	- iterator::value_type
+	- iterator::iterator_category
+- operator overloading recap
+	- pre/post increment
+		- difference between their operator functions is arguments passed to them
+		- example: opertor++(int) - post increment, operator++(void) pre increment
+		- in operator++(int) 
+			- the int argument is never used and is garbage 
+			- present just to differentiate pre and post increment
+	- ** always use pre increment instead of post increment when it makes no difference
+		- ** because, post increment requires copy in implementation which is intensive operation
+- using for value_type and iterator_category
+	using value_type = ElemType
+	using iterator_category = std::bidirectional_iterator_tag
